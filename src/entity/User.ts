@@ -1,3 +1,4 @@
+import { userStatuses } from './../helpers/userStatuses';
 import { LoginHistory } from './LoginHistory';
 import { ShoppingCart } from './ShoppingCart';
 import { People } from './People';
@@ -17,6 +18,8 @@ export class User extends BaseEntity {
     @Column({ select: false }) password: string;
 
     @Column({ type: 'enum', enum: userRoles, default: userRoles.CUSTOMER }) role: userRoles;
+
+    @Column({ type: 'enum', enum: userStatuses, default: userStatuses.ACTIVE }) status: userStatuses;
 
     @Column({ select: false, nullable: true }) recoverToken: string;
 
