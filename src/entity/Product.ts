@@ -36,7 +36,7 @@ export class Product extends BaseEntity {
     pulledApart: PulledApart[];
 
     @OneToOne(type => Stock)
-    stock: Stock[];
+    stock: Stock;
 
     @OneToMany(type => EntryInvoiceProduct, eip => eip.product)
     entryInvoiceProduct: EntryInvoiceProduct[];

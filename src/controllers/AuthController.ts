@@ -64,8 +64,6 @@ export class AuthController {
 
         const { email, password } = req.body;
 
-
-
         try {
 
             const ip = req.headers['x-forwarded-for'] ||
@@ -74,10 +72,6 @@ export class AuthController {
 
             let user = await User.createQueryBuilder('user').addSelect('user.password').where('user.email = :email', { email: email }).getOne();
             if (!user) return res.status(404).send({ code: 404, message: 'Correo electrónico o contraseña incorrecta' });
-
-            console.log(user);
-
-            console.log(password, user.password);
 
             bcrypt.compare(password, user.password)
                 .then(async (result) => {
@@ -90,16 +84,26 @@ export class AuthController {
 
                         let loginSaved = await login.save();
 
-                        return res.status(200).send({ code: 200, data: loginSaved, message: 'Sesión iniciada correctamente.' })
+                        return res.status(200).send({ code: 200, data: login.token, message: 'Sesión iniciada correctamente.' })
                     } else {
-                        return res.status(404).send({ code: 404, message: 'Correo electrónico o contraseña incorrecta' });
+                        return res.status(404).send({ code: 404, message: 'La contraseña que usted ha ingresado es incorrecta.' });
                     }
                 })
                 .catch(error => console.log(error))
 
-
         } catch (error) {
             return res.status(500).send({ code: 500, error: error, message: 'Error de servidor.' })
         }
+    }
+
+    async getUserInfo(req: Request, res: Response) {
+        const { token } = req.params;
+
+        if (!token) return res.status(400).send({ message: 'Token de sesión requerido.' });
+
+        let login = await LoginHistory.findOne({ where: { token: token } });
+        if (!login) return res.status(404).send({ message: 'Sesión expirada.' });
+
+        return res.status(200).send({ data: login.user });
     }
 }

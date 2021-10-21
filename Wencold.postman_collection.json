@@ -1,0 +1,398 @@
+{
+	"info": {
+		"_postman_id": "d0f58c6e-aea8-4e59-a6ed-2334fe6e590f",
+		"name": "Wencold",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "SignUp",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "firstname",
+									"value": "Luis",
+									"type": "text"
+								},
+								{
+									"key": "lastname",
+									"value": "Martinez",
+									"type": "text"
+								},
+								{
+									"key": "dni",
+									"value": "V26976753",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "thelm132@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "LFMR140100",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "Pueblo Nuevo",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "04261551902",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url_host}}/auth/signup",
+							"host": [
+								"{{url_host}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignIn",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "admin@wencold.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "wencold1234",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url_host}}/auth/signin",
+							"host": [
+								"{{url_host}}"
+							],
+							"path": [
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_host}}/auth/token/:token",
+							"host": [
+								"{{url_host}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								":token"
+							],
+							"variable": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW5Ad2VuY29sZC5jb20iLCJkYXRlIjoiMjAyMS0xMC0yMVQxNzowNzowNC45NzdaIiwiaWF0IjoxNjM0ODM2MDI0fQ.yfq-OzjLO_LBZ0IraVeREWogrP6VadoSrQLm1odhLFI"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product Types",
+			"item": [
+				{
+					"name": "Create Product Type",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Congelador",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Tipo de productos relacionados a los congeladores",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url_host}}/product/productTypes",
+							"host": [
+								"{{url_host}}"
+							],
+							"path": [
+								"product",
+								"productTypes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List ProductTypes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_host}}/product/productTypes?page=1&limit=10&search=con",
+							"host": [
+								"{{url_host}}"
+							],
+							"path": [
+								"product",
+								"productTypes"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": "con"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Provider",
+			"item": [
+				{
+					"name": "Create Provider MANAGER",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "dni",
+									"value": "V26976753",
+									"type": "text"
+								},
+								{
+									"key": "firstname",
+									"value": "Luis",
+									"type": "text"
+								},
+								{
+									"key": "lastname",
+									"value": "Martinez",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "04261551902",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "CAlle 6 entre carrera 1 y avenida los horcones",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url_host}}/provider",
+							"host": [
+								"{{url_host}}"
+							],
+							"path": [
+								"provider"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Providers",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_host}}/provider",
+							"host": [
+								"{{url_host}}"
+							],
+							"path": [
+								"provider"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show Provider",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_host}}/provider/:id",
+							"host": [
+								"{{url_host}}"
+							],
+							"path": [
+								"provider",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url_host",
+			"value": "http://localhost:8000/api"
+		},
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW5Ad2VuY29sZC5jb20iLCJkYXRlIjoiMjAyMS0xMC0yMVQxNzowNzowNC45NzdaIiwiaWF0IjoxNjM0ODM2MDI0fQ.yfq-OzjLO_LBZ0IraVeREWogrP6VadoSrQLm1odhLFI"
+		}
+	]
+}

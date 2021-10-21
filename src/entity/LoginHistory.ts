@@ -15,7 +15,7 @@ export class LoginHistory extends BaseEntity {
 
     @Column() device: string;
 
-    @ManyToOne(type => User, user => user.loginHistory)
+    @ManyToOne(type => User, user => user.loginHistory, { eager: true })
     user: User;
 
 }

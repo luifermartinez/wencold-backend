@@ -1,12 +1,12 @@
+import { apiRoutes } from './../routes/apiRoutes';
 import { People } from './../entity/People';
 import { User } from './../entity/User';
 import { createConnection, getConnection } from 'typeorm';
-import express, { Request, Response } from 'express';
+import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import * as bodyParser from 'body-parser';
 import { pagination } from 'typeorm-pagination';
-import { authRoutes } from '../routes/authRoutes';
 import DeviceDetector from 'node-device-detector';
 import { userRoles } from '../helpers/userRoles';
 import { userStatuses } from '../helpers/userStatuses';
@@ -48,7 +48,7 @@ export class Server {
 
 
     routes() {
-        this.app.use('/api/auth', authRoutes);
+        this.app.use('/api', apiRoutes);
     }
 
     start() {
