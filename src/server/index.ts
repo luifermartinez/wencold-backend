@@ -19,7 +19,7 @@ export class Server {
     deviceDetector = new DeviceDetector();
     constructor() {
         this.app = express();
-        this.port = process.env.PORT || 8000;
+        this.port = process.env.PORT || 3150;
 
         this.middlewares();
         this.routes();
