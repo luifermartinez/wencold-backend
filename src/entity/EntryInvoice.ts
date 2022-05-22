@@ -1,21 +1,29 @@
-import { EntryInvoiceProduct } from './EntryInvoiceProduct';
-import { Movement } from './Movement';
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne } from "typeorm";
-import { Product } from './Product';
+import { EntryInvoiceProduct } from "./EntryInvoiceProduct"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  ManyToOne,
+} from "typeorm"
 
 @Entity()
 export class EntryInvoice extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  id: number
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Column({ unique: true })
+  code: string
 
-    @Column({ unique: true }) code: string;
+  @OneToMany((type) => EntryInvoiceProduct, (eip) => eip.entryInvoice)
+  entryInvoiceProduct: EntryInvoiceProduct[]
 
-    @OneToMany(type => EntryInvoiceProduct, eip => eip.entryInvoice)
-    entryInvoiceProduct: EntryInvoiceProduct[];
+  @CreateDateColumn()
+  createdAt: Date
 
-    @CreateDateColumn() createdAt: Date;
-
-    @UpdateDateColumn() updatedAt: Date;
-
+  @UpdateDateColumn()
+  updatedAt: Date
 }
