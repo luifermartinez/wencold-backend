@@ -22,15 +22,20 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column() email: string
+  @Column() 
+  email: string
 
-  @Column({ select: false }) password: string
+  @Column({ select: false }) 
+  password: string
 
   @Column({ type: "enum", enum: userRoles, default: userRoles.CUSTOMER })
   role: userRoles
 
   @Column({ type: "enum", enum: userStatuses, default: userStatuses.ACTIVE })
   status: userStatuses
+
+  @Column({ nullable: true })
+  bannedReason: string
 
   @Column({ select: false, nullable: true })
   recoverToken: string

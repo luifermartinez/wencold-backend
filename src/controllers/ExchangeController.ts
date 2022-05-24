@@ -1,29 +1,51 @@
+import { Exchange } from "./../entity/Exchange"
 import { Request, Response } from "express"
 import { StatusCodes } from "http-status-codes"
-import { Exchange } from "../entity/Exchange"
+import moment from "moment"
 
 export class ExchangeController {
   async listExchanges(req: Request, res: Response) {
     try {
-      const { page, limit } = req.query
-      const pageNumber = page ? parseInt(page as string) : 1
-      const limitNumber = page ? parseInt(limit as string) : 10
+      const { page, limit, date, dateEnd } = req.query
+      const pageNumber = page ? Number(page) : 1
+      const limitNumber = page ? Number(limit) : 10
 
-      const [exchanges, total] = await Exchange.findAndCount({
-        skip: (pageNumber - 1) * limitNumber,
-        take: limitNumber,
-        order: {
-          createdAt: "DESC",
-        },
-      })
+      const query = Exchange.createQueryBuilder("exchange")
+
+      if (date && !dateEnd) {
+        query.where("exchange.createdAt = :date", { date })
+      }
+
+      if (date && dateEnd) {
+        query.where(
+          "exchange.createdAt >= :date && exchange.createdAt <= :dateEnd",
+          {
+            date,
+            dateEnd,
+          }
+        )
+      }
+
+      let exchanges = await query
+        .orderBy("exchange.createdAt", "DESC")
+        .skip(limitNumber * (pageNumber - 1))
+        .take(limitNumber)
+        .getMany()
+
+      const finalExchanges = exchanges.map((exchange) => ({
+        ...exchange,
+        editable: moment(exchange.createdAt).isAfter(
+          moment().subtract(1, "hours")
+        ),
+      }))
+
+      const count = await query.getCount()
 
       return res.status(StatusCodes.OK).send({
         code: StatusCodes.OK,
-        data: exchanges,
+        data: finalExchanges,
         message: "Lista de tasas de cambio.",
-        total,
-        page,
-        limit,
+        total: count,
       })
     } catch (error) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -130,6 +152,14 @@ export class ExchangeController {
         })
       }
 
+      if (!moment(exchange.createdAt).isAfter(moment().subtract(1, "hours"))) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          code: StatusCodes.BAD_REQUEST,
+          message:
+            "No puede modificar la tasa de cambio, porque ya pasó el tiempo mínimo de edición.",
+        })
+      }
+
       exchange.bsEquivalence = bsEquivalence
 
       await exchange.save()
@@ -177,16 +207,18 @@ export class ExchangeController {
 
   async getTodayExchange(req: Request, res: Response) {
     try {
-      const exchange = await Exchange.findOne({
-        where: { createdAt: new Date() },
-      })
+      const query = Exchange.createQueryBuilder("exchange")
 
-      if (!exchange) {
-        return res.status(StatusCodes.NOT_FOUND).json({
-          code: StatusCodes.NOT_FOUND,
-          message: "Tasa de cambio no encontrada",
-        })
-      }
+      const date = moment().startOf("day").format("YYYY-MM-DD HH:mm:ss")
+      const endDate = moment().endOf("day").format("YYYY-MM-DD HH:mm:ss")
+
+      query
+        .where("exchange.createdAt >= :date", { date })
+        .andWhere("exchange.createdAt <= :dateEnd", { dateEnd: endDate })
+
+      const exchange = await query
+        .orderBy("exchange.createdAt", "DESC")
+        .getOne()
 
       return res.status(StatusCodes.OK).send({
         code: StatusCodes.OK,

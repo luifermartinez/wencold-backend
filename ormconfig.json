@@ -6,7 +6,7 @@
    "password": "",
    "database": "wencold",
    "synchronize": true,
-   "logging": true,
+   "logging": false,
    "entities": [
       "src/entity/**/*.ts"
    ],

@@ -1,3 +1,4 @@
+import { usersRoutes } from "./usersRoutes"
 import { exchangeRoutes } from "./exchangeRoutes"
 import { providerRoutes } from "./providerRoutes"
 import { productRoutes } from "./productRoutes"
@@ -9,3 +10,4 @@ export const apiRoutes = Router()
   .use("/product", productRoutes)
   .use("/provider", providerRoutes)
   .use("/exchange", exchangeRoutes)
+  .use("/users", usersRoutes)

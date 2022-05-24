@@ -6,6 +6,7 @@ import bcrypt from "bcrypt"
 import { validationResult } from "express-validator"
 import jwt from "jsonwebtoken"
 import { StatusCodes } from "http-status-codes"
+import { userStatuses } from "../helpers/userStatuses"
 
 export class AuthController {
   async signUp(req: Request, res: Response) {
@@ -48,6 +49,7 @@ export class AuthController {
           let user = new User()
           user.email = email
           user.password = await bcrypt.hash(password, await bcrypt.genSalt(10))
+          user.people = peopleSaved
 
           let userSaved = await user.save()
 
@@ -86,9 +88,8 @@ export class AuthController {
 
       let user = await User.findOne({
         where: { email: email },
-        select: ["id", "email", "password", "people"],
+        select: ["id", "email", "password", "people", "status", "bannedReason"],
       })
-      console.log(email, password)
       if (!user)
         return res.status(StatusCodes.NOT_FOUND).send({
           code: StatusCodes.NOT_FOUND,
@@ -99,6 +100,15 @@ export class AuthController {
         .compare(password, user.password)
         .then(async (result) => {
           if (result) {
+            if (user.status === userStatuses.BANNED) {
+              return res.status(StatusCodes.FORBIDDEN).send({
+                code: StatusCodes.FORBIDDEN,
+                message: `Usuario baneado. ${
+                  user.bannedReason ? `Motivo: ${user.bannedReason}` : ""
+                }`,
+              })
+            }
+
             let login = new LoginHistory()
             login.user = user
             login.token = jwt.sign(
@@ -108,7 +118,7 @@ export class AuthController {
             login.ip = ip.toString()
             login.device = `NAVEGADOR`
 
-            let loginSaved = await login.save()
+            await login.save()
 
             return res.status(StatusCodes.OK).send({
               code: StatusCodes.OK,
@@ -168,10 +178,17 @@ export class AuthController {
         .send({ message: "Token de sesión requerido." })
 
     let login = await LoginHistory.findOne({ where: { token: token } })
-    if (!login)
+    if (!login) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .send({ message: "Sesión expirada." })
+    }
+
+    if (login.user.status === userStatuses.BANNED) {
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .send({ message: "Usuario baneado." })
+    }
 
     return res.status(StatusCodes.OK).send({
       data: login.user,

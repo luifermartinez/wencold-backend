@@ -8,15 +8,20 @@ export class People extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column() dni: string;
+    @Column() 
+    dni: string;
 
-    @Column() firstname: string;
+    @Column() 
+    firstname: string;
 
-    @Column() lastname: string;
+    @Column() 
+    lastname: string;
 
-    @Column() phone: string;
+    @Column() 
+    phone: string;
 
-    @Column({ nullable: true }) address: string;
+    @Column({ nullable: true }) 
+    address: string;
 
     @OneToOne(type => User)
     user: User;
