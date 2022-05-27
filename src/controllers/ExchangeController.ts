@@ -180,9 +180,9 @@ export class ExchangeController {
 
   async getLastExchange(req: Request, res: Response) {
     try {
-      const exchange = await Exchange.findOne({
-        order: { createdAt: "DESC" },
-      })
+      const query = Exchange.createQueryBuilder("exchange")
+
+      const exchange = await query.orderBy("exchange.id", "DESC").getOne()
 
       if (!exchange) {
         return res.status(StatusCodes.NOT_FOUND).json({

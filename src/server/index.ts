@@ -1,18 +1,14 @@
 import { apiRoutes } from "./../routes/apiRoutes"
-import { People } from "./../entity/People"
-import { User } from "./../entity/User"
-import { createConnection, getConnection } from "typeorm"
+import { createConnection } from "typeorm"
 import express from "express"
 import morgan from "morgan"
 import cors from "cors"
-import * as bodyParser from "body-parser"
 import { pagination } from "typeorm-pagination"
 import DeviceDetector from "node-device-detector"
-import { userRoles } from "../helpers/userRoles"
-import { userStatuses } from "../helpers/userStatuses"
-import bcrypt from "bcrypt"
 import { createAdmin } from "../seeders/adminSeeder"
 import { createFirstExchange } from "../seeders/exchangeSeeder"
+import fileUpload from "express-fileupload"
+import bodyParser from "body-parser"
 
 export class Server {
   app: express.Express
@@ -28,15 +24,22 @@ export class Server {
 
   middlewares() {
     this.app.use(cors())
+    this.app.use(bodyParser.json())
+    this.app.use(bodyParser.urlencoded({ extended: true }))
     this.app.use(express.json())
     this.app.use(express.urlencoded({ extended: true }))
-    this.app.use(bodyParser.urlencoded({ extended: true }))
-    this.app.use(bodyParser.json())
     this.app.use(this.middlewareDetect)
-    this.app.use(morgan("dev"))
     this.app.use(morgan("dev"))
     this.app.use(pagination)
     this.app.set("trust proxy", true)
+    this.app.use(express.static("public"))
+    this.app.use(
+      fileUpload({
+        useTempFiles: true,
+        tempFileDir: "/tmp/",
+        createParentPath: true,
+      })
+    )
   }
 
   middlewareDetect = (req: any, res: any, next: any) => {

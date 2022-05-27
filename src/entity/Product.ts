@@ -35,35 +35,34 @@ export class Product extends BaseEntity {
   @Column()
   price: number
 
-  @ManyToOne((type) => Provider, (provider) => provider.product, {
+  @ManyToOne(() => Provider, (provider) => provider.product, {
     eager: true,
   })
   provider: Provider
 
-  @ManyToOne((type) => ProductType, (productType) => productType.product, {
+  @ManyToOne(() => ProductType, (productType) => productType.product, {
     eager: true,
   })
   productType: ProductType
 
-  @OneToMany((type) => ProductImage, (productImage) => productImage.product)
+  @OneToMany(() => ProductImage, (productImage) => productImage.product, {
+    eager: true,
+  })
   productImage: ProductImage[]
 
-  @OneToMany((type) => PulledApart, (pulledApart) => pulledApart.product)
+  @OneToMany(() => PulledApart, (pulledApart) => pulledApart.product)
   pulledApart: PulledApart[]
 
-  @OneToOne((type) => Stock)
+  @OneToOne(() => Stock)
   stock: Stock
 
-  @OneToMany(
-    (type) => BillOutProduct,
-    (billOutProduct) => billOutProduct.product
-  )
+  @OneToMany(() => BillOutProduct, (billOutProduct) => billOutProduct.product)
   billoutProducts: BillOutProduct[]
 
-  @OneToMany((type) => EntryInvoiceProduct, (eip) => eip.product)
+  @OneToMany(() => EntryInvoiceProduct, (eip) => eip.product)
   entryInvoiceProduct: EntryInvoiceProduct[]
 
-  @OneToMany((type) => ShoppingCart, (shoppingCart) => shoppingCart.product)
+  @OneToMany(() => ShoppingCart, (shoppingCart) => shoppingCart.product)
   shoppingCart: ShoppingCart[]
 
   @CreateDateColumn()

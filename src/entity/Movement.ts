@@ -1,24 +1,38 @@
-import { Stock } from './Stock';
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne } from "typeorm";
-import { Product } from './Product';
+import { User } from "./User"
+import { Stock } from "./Stock"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  OneToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  ManyToOne,
+} from "typeorm"
+import { Product } from "./Product"
 
 @Entity()
 export class Movement extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  id: number
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Column() description: string
 
-    @Column() description: string;
+  @Column({ type: "int" }) quantity: number
 
-    @Column({ type: 'int' }) quantity: number;
+  @Column({ type: "datetime" }) movementDate: Date
 
-    @Column({ type: 'datetime' }) movementDate: Date;
+  @ManyToOne((type) => Stock, (stock) => stock.movement)
+  stock: Stock
 
-    @ManyToOne(type => Stock, stock => stock.movement)
-    stock: Stock;
+  @ManyToOne(() => User, (user) => user.movement)
+  user: User
 
-    @CreateDateColumn() createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date
 
-    @UpdateDateColumn() updatedAt: Date;
-
+  @UpdateDateColumn() updatedAt: Date
 }

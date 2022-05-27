@@ -4,6 +4,7 @@ import {
   Column,
   OneToMany,
   BaseEntity,
+  DeleteDateColumn,
 } from "typeorm"
 import { Payment } from "./Payment"
 
@@ -30,6 +31,12 @@ export class PaymentMethod extends BaseEntity {
   @Column({ nullable: true })
   bankName: string
 
+  @Column({ nullable: true })
+  accountNumber: string
+
   @OneToMany((type) => Payment, (payment) => payment.paymentMethod)
   payment: Payment[]
+
+  @DeleteDateColumn()
+  deletedAt: Date
 }

@@ -1,3 +1,4 @@
+import { Movement } from "./Movement"
 import { userStatuses } from "./../helpers/userStatuses"
 import { LoginHistory } from "./LoginHistory"
 import { ShoppingCart } from "./ShoppingCart"
@@ -22,10 +23,10 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column() 
+  @Column()
   email: string
 
-  @Column({ select: false }) 
+  @Column({ select: false })
   password: string
 
   @Column({ type: "enum", enum: userRoles, default: userRoles.CUSTOMER })
@@ -51,12 +52,14 @@ export class User extends BaseEntity {
   @JoinColumn()
   people: People
 
-  @OneToOne((type) => ShoppingCart)
-  @JoinColumn()
-  shoppingCart: ShoppingCart
+  @OneToMany((type) => ShoppingCart, (shoppingCart) => shoppingCart.user)
+  shoppingCart: ShoppingCart[]
 
   @OneToMany((type) => LoginHistory, (loginHistory) => loginHistory.user)
   loginHistory: LoginHistory[]
+
+  @OneToMany(() => Movement, (movement) => movement.user)
+  movement: Movement[]
 
   @OneToMany((type) => PulledApart, (pulledApart) => pulledApart.user)
   pulledApart: PulledApart[]
