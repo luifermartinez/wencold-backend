@@ -19,8 +19,6 @@ export class ShoppingCartController {
         where: { user: userLogin.user.id },
       })
 
-      console.log(carts)
-
       return res.status(StatusCodes.OK).send({
         message: "Productos encontrados.",
         data: carts,
