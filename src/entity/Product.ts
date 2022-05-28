@@ -16,7 +16,6 @@ import {
   OneToMany,
 } from "typeorm"
 import { ProductImage } from "./ProductImage"
-import { PulledApart } from "./PulledApart"
 
 @Entity()
 export class Product extends BaseEntity {
@@ -50,8 +49,6 @@ export class Product extends BaseEntity {
   })
   productImage: ProductImage[]
 
-  @OneToMany(() => PulledApart, (pulledApart) => pulledApart.product)
-  pulledApart: PulledApart[]
 
   @OneToOne(() => Stock)
   stock: Stock

@@ -171,6 +171,7 @@ export class PaymentMethodController {
       return res.status(StatusCodes.OK).send({
         data: paymentMethod,
         message: "Metodo de pago actualizado.",
+        code: StatusCodes.OK,
       })
     } catch (error) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

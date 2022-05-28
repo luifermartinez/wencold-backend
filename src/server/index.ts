@@ -1,3 +1,4 @@
+import { createTax } from "./../seeders/taxSeeder"
 import { apiRoutes } from "./../routes/apiRoutes"
 import { createConnection } from "typeorm"
 import express from "express"
@@ -59,6 +60,7 @@ export class Server {
       .then(async (connecction) => {
         await createAdmin(connecction)
         await createFirstExchange(connecction)
+        await createTax(connecction)
 
         this.app.listen(this.port, () =>
           console.log(`Backend Running in port ${this.port}`)

@@ -16,7 +16,6 @@ import {
   OneToMany,
 } from "typeorm"
 import { Image } from "./Image"
-import { PulledApart } from "./PulledApart"
 
 @Entity()
 export class User extends BaseEntity {
@@ -60,9 +59,6 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Movement, (movement) => movement.user)
   movement: Movement[]
-
-  @OneToMany((type) => PulledApart, (pulledApart) => pulledApart.user)
-  pulledApart: PulledApart[]
 
   @CreateDateColumn()
   createdAt: Date

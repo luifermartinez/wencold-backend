@@ -266,14 +266,45 @@ export class StockController {
         fs.unlinkSync(pathImage)
       }
 
+      await productImage.remove()
       const image = await Image.findOne(productImage.image.id)
       await image.remove()
-
-      await productImage.remove()
 
       return res.status(StatusCodes.OK).send({
         message: "Imagen eliminada.",
         data: null,
+        code: StatusCodes.OK,
+      })
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: error,
+        data: null,
+        code: StatusCodes.INTERNAL_SERVER_ERROR,
+      })
+    }
+  }
+
+  async getStockByProduct(req: Request, res: Response) {
+    try {
+      const { id } = req.params
+
+      const product = await Product.findOne(id)
+
+      if (!product) {
+        return res.status(StatusCodes.NOT_FOUND).send({
+          message: "Producto no encontrado.",
+          data: null,
+          code: StatusCodes.NOT_FOUND,
+        })
+      }
+
+      const stock = await Stock.findOne({
+        where: { product: product },
+      })
+
+      return res.status(StatusCodes.OK).send({
+        message: "Stock encontrado.",
+        data: stock,
         code: StatusCodes.OK,
       })
     } catch (error) {

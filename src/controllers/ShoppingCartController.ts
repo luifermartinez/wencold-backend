@@ -16,7 +16,7 @@ export class ShoppingCartController {
       })
 
       const carts = await ShoppingCart.find({
-        where: { user: userLogin.user.id },
+        where: { user: userLogin.user },
       })
 
       return res.status(StatusCodes.OK).send({
@@ -25,6 +25,7 @@ export class ShoppingCartController {
         code: StatusCodes.OK,
       })
     } catch (error) {
+      console.log(error)
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Error al obtener los productos.",
         data: error,
@@ -105,6 +106,59 @@ export class ShoppingCartController {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Error al agregar el producto al carrito.",
         data: error,
+        code: StatusCodes.INTERNAL_SERVER_ERROR,
+      })
+    }
+  }
+
+  async updateProduct(req: Request, res: Response) {
+    try {
+      const { id } = req.params
+      const { quantity } = req.body
+
+      const token = getToken(req)
+
+      const userLogin = await LoginHistory.findOne({
+        where: { token },
+      })
+
+      const cartProduct = await ShoppingCart.findOne({
+        where: { id, user: userLogin.user.id },
+      })
+
+      if (!cartProduct) {
+        return res.status(StatusCodes.NOT_FOUND).send({
+          message: "Producto no encontrado.",
+          data: null,
+          code: StatusCodes.NOT_FOUND,
+        })
+      }
+
+      const stock = await Stock.findOne({
+        where: { product: cartProduct.product.id },
+      })
+
+      if (quantity > stock.available) {
+        return res.status(StatusCodes.BAD_REQUEST).send({
+          message: "No hay suficiente stock.",
+          data: null,
+          code: StatusCodes.BAD_REQUEST,
+        })
+      }
+
+      cartProduct.quantity = quantity
+
+      await cartProduct.save()
+
+      return res.status(StatusCodes.OK).send({
+        message: "Producto actualizado.",
+        data: cartProduct,
+        code: StatusCodes.OK,
+      })
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: error,
+        data: null,
         code: StatusCodes.INTERNAL_SERVER_ERROR,
       })
     }

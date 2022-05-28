@@ -1,3 +1,5 @@
+import fs from "fs"
+import path from "path"
 import bcrypt from "bcrypt"
 import { uploadFile } from "./../utils/uploadFile"
 import { LoginHistory } from "./../entity/LoginHistory"
@@ -175,7 +177,16 @@ export class ProfileController {
 
       let patho: any
       let imga: Image
-      imga = new Image()
+
+      if (!!user.image) {
+        imga = user.image
+        const imgPath = path.join(__dirname, "../../public", user.image.path)
+        if (fs.existsSync(imgPath)) {
+          fs.unlinkSync(imgPath)
+        }
+      } else {
+        imga = new Image()
+      }
 
       patho = await uploadFile(req.files, "image", undefined, `user/${user.id}`)
       imga.path = patho

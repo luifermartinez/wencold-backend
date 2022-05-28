@@ -1,3 +1,6 @@
+import { billOutRoutes } from "./billOutRoutes"
+import { paymentRoutes } from "./paymentRoutes"
+import { taxRoutes } from "./taxRoutes"
 import { profileRoutes } from "./profileRoutes"
 import { StockController } from "./../controllers/StockController"
 import { entryInvoiceRoutes } from "./entryInvoiceRoutes"
@@ -25,5 +28,8 @@ export const apiRoutes = Router()
   .use("/stock", stockRoutes)
   .use("/profile", profileRoutes)
   .use("/payment-methods", paymentMethodRoutes)
+  .use("/payment", paymentRoutes)
   .use("/shopping-cart", shoppingCartRoutes)
+  .use("/billout", billOutRoutes)
+  .use("/tax", taxRoutes)
   .get("/image", stockController.getImage)

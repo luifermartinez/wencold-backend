@@ -40,7 +40,7 @@ export class Payment extends BaseEntity {
   @ManyToOne((type) => PaymentMethod, (paymentMethod) => paymentMethod.payment)
   paymentMethod: PaymentMethod
 
-  @ManyToOne((type) => BillOut, (billOut) => billOut.payment)
+  @ManyToOne((type) => BillOut, (billOut) => billOut.payment, { eager: true })
   billOut: BillOut
 
   @CreateDateColumn()
