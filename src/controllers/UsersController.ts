@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes"
 import moment from "moment"
 import { People } from "../entity/People"
 import { User } from "../entity/User"
+import { userRoles } from "../helpers/userRoles"
 
 export class UsersController {
   async listUsers(req: Request, res: Response) {
@@ -213,7 +214,7 @@ export class UsersController {
     }
   }
 
-  async usersRegistered(req: Request, res: Response) {
+  async customersRegistered(req: Request, res: Response) {
     try {
       let startDate: Date | null = null
       let endDate: Date | null = null
@@ -223,10 +224,9 @@ export class UsersController {
         endDate = moment(String(req.query.endDate)).endOf("day").toDate()
       }
 
-      const query = User.createQueryBuilder("user").leftJoinAndSelect(
-        "user.people",
-        "people"
-      )
+      const query = User.createQueryBuilder("user")
+        .leftJoinAndSelect("user.people", "people")
+        .where(`user.role = ${userRoles.CUSTOMER}`)
 
       if (startDate && endDate) {
         query.where("user.createdAt BETWEEN :startDate AND :endDate", {
