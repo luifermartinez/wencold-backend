@@ -369,7 +369,7 @@ export class PaymentController {
       }
       amount = amount * (1 + tax.tax)
 
-      if (Number(amountRef) !== amount) {
+      if (Number(Math.ceil(amountRef)) !== Math.ceil(amount)) {
         return res.status(StatusCodes.BAD_REQUEST).send({
           message: "El monto de la factura no coincide con el monto ingresado.",
           code: StatusCodes.BAD_REQUEST,

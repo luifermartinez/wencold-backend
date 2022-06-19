@@ -163,4 +163,42 @@ export class ShoppingCartController {
       })
     }
   }
+
+  async removeProduct(req: Request, res: Response) {
+    try {
+      const { id } = req.params
+
+      const token = getToken(req)
+
+      const userLogin = await LoginHistory.findOne({
+        where: { token },
+      })
+
+      const cartProduct = await ShoppingCart.findOne({
+        where: { id, user: userLogin.user.id },
+      })
+
+      if (!cartProduct) {
+        return res.status(StatusCodes.NOT_FOUND).send({
+          message: "Producto no encontrado.",
+          data: null,
+          code: StatusCodes.NOT_FOUND,
+        })
+      }
+
+      await cartProduct.remove()
+
+      return res.status(StatusCodes.OK).send({
+        message: "Producto eliminado.",
+        data: cartProduct,
+        code: StatusCodes.OK,
+      })
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Error al eliminar el producto al carrito.",
+        data: error,
+        code: StatusCodes.INTERNAL_SERVER_ERROR,
+      })
+    }
+  }
 }

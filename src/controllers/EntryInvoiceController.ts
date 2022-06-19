@@ -309,8 +309,11 @@ export class EntryInvoiceController {
       const oldExistence = stock.existence
       const oldAvailable = stock.available
 
-      stock.existence = oldExistence - entryInvoiceProduct.quantity
-      stock.available = oldAvailable - entryInvoiceProduct.quantity
+      const newExistence = oldExistence - entryInvoiceProduct.quantity
+      const newAvailable = oldAvailable - entryInvoiceProduct.quantity
+
+      stock.existence = newExistence > 0 ? newExistence : 0
+      stock.available = newAvailable > 0 ? newAvailable : 0
 
       const movement = new Movement()
       movement.description =

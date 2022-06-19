@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt"
 import { Request, Response } from "express"
 import { StatusCodes } from "http-status-codes"
+import moment from "moment"
 import { People } from "../entity/People"
 import { User } from "../entity/User"
 
@@ -46,9 +47,11 @@ export class UsersController {
         code: StatusCodes.OK,
       })
     } catch (error) {
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send({ message: "Error de servidor.", data: error })
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Error de servidor.",
+        data: error,
+        code: StatusCodes.INTERNAL_SERVER_ERROR,
+      })
     }
   }
 
@@ -98,9 +101,11 @@ export class UsersController {
         message: "Estado del usuario actualizado satisfactoriamente.",
       })
     } catch (error) {
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send({ message: "Error de servidor.", data: error })
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Error de servidor.",
+        data: error,
+        code: StatusCodes.INTERNAL_SERVER_ERROR,
+      })
     }
   }
 
@@ -124,9 +129,11 @@ export class UsersController {
         message: "Datos del usuario encontrados.",
       })
     } catch (error) {
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send({ message: "Error de servidor.", data: error })
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Error de servidor.",
+        data: error,
+        code: StatusCodes.INTERNAL_SERVER_ERROR,
+      })
     }
   }
 
@@ -198,9 +205,49 @@ export class UsersController {
         message: "Usuario creado satisfactoriamente.",
       })
     } catch (error) {
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send({ message: "Error de servidor.", data: error })
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Error de servidor.",
+        data: error,
+        code: StatusCodes.INTERNAL_SERVER_ERROR,
+      })
+    }
+  }
+
+  async usersRegistered(req: Request, res: Response) {
+    try {
+      let startDate: Date | null = null
+      let endDate: Date | null = null
+
+      if (req.query.startDate && req.query.endDate) {
+        startDate = moment(String(req.query.startDate)).startOf("day").toDate()
+        endDate = moment(String(req.query.endDate)).endOf("day").toDate()
+      }
+
+      const query = User.createQueryBuilder("user").leftJoinAndSelect(
+        "user.people",
+        "people"
+      )
+
+      if (startDate && endDate) {
+        query.where("user.createdAt BETWEEN :startDate AND :endDate", {
+          startDate,
+          endDate,
+        })
+      }
+
+      const users = await query.getMany()
+
+      return res.status(StatusCodes.OK).send({
+        code: StatusCodes.OK,
+        data: users,
+        message: "Usuarios encontrados.",
+      })
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Error de servidor.",
+        data: error,
+        code: StatusCodes.INTERNAL_SERVER_ERROR,
+      })
     }
   }
 }

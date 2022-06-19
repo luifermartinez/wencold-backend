@@ -18,11 +18,9 @@ export class PaymentMethodController {
           { search: `%${search}%` }
         )
       }
-
       if (status === "0") {
         query.andWhere("paymentMethod.deletedAt IS NOT NULL")
       }
-
       if (status === "1") {
         query.andWhere("paymentMethod.deletedAt IS NULL")
       }

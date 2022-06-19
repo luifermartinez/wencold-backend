@@ -17,7 +17,12 @@ export class ProductController {
       .leftJoinAndSelect("productImage.image", "image")
 
     if (search) {
-      query.where("product.name LIKE :search", { search: `%${search}%` })
+      query.where(
+        "product.name LIKE :search OR product.code LIKE :search OR productType.name LIKE :search OR productType.description LIKE :search",
+        {
+          search: `%${search}%`,
+        }
+      )
     }
 
     if (productType) {
