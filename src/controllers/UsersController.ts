@@ -226,7 +226,7 @@ export class UsersController {
 
       const query = User.createQueryBuilder("user")
         .leftJoinAndSelect("user.people", "people")
-        .where(`user.role = ${userRoles.CUSTOMER}`)
+        .where(`user.role = :role`, { role: userRoles.CUSTOMER })
 
       if (startDate && endDate) {
         query.where("user.createdAt BETWEEN :startDate AND :endDate", {

@@ -197,9 +197,9 @@ export class AuthController {
     })
   }
 
-  async forgotPassword(req: Request, res: Response) {
+  async checkValid(req: Request, res: Response) {
     try {
-      const { email } = req.body
+      const { email, dni } = req.query
 
       let user = await User.findOne({ where: { email: email } })
       if (!user)
@@ -208,12 +208,58 @@ export class AuthController {
           message: "Correo electrónico no encontrado.",
         })
 
-      /* TO DO SEND EMAIL TO RECOVER PASSWORD */
+      if (user.people.dni !== dni) {
+        return res.status(StatusCodes.NOT_FOUND).send({
+          code: StatusCodes.NOT_FOUND,
+          message: "Identidad no encontrada.",
+        })
+      }
 
       return res.status(StatusCodes.OK).send({
         code: StatusCodes.OK,
-        data: null,
-        message: "Correo enviado correctamente.",
+        data: user,
+        message: "Identidad confirmada.",
+      })
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        code: StatusCodes.INTERNAL_SERVER_ERROR,
+        error: error,
+        message: "Error de servidor.",
+      })
+    }
+  }
+
+  async changePassword(req: Request, res: Response) {
+    try {
+      const { email, password, dni } = req.body
+
+      let user = await User.findOne({ where: { email: email } })
+      if (!user)
+        return res.status(StatusCodes.NOT_FOUND).send({
+          code: StatusCodes.NOT_FOUND,
+          message: "Correo electrónico no encontrado.",
+        })
+
+      if (user.people.dni !== dni) {
+        return res.status(StatusCodes.NOT_FOUND).send({
+          code: StatusCodes.NOT_FOUND,
+          message: "Identidad no encontrada.",
+        })
+      }
+
+      user.password = await bcrypt.hash(password, await bcrypt.genSalt(10))
+
+      if (!(await user.save())) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+          code: StatusCodes.INTERNAL_SERVER_ERROR,
+          message: "Error de servidor.",
+        })
+      }
+
+      return res.status(StatusCodes.OK).send({
+        code: StatusCodes.OK,
+        data: user,
+        message: "Contraseña cambiada correctamente.",
       })
     } catch (error) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

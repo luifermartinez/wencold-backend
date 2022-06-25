@@ -11,6 +11,7 @@ import { Request, Response } from "express"
 import { EntryInvoice } from "../entity/EntryInvoice"
 import { getToken } from "../helpers/getToken"
 import { ReturnProduct } from "../entity/ReturnProduct"
+import moment from "moment"
 
 export class EntryInvoiceController {
   async create(req: Request, res: Response) {
@@ -345,6 +346,116 @@ export class EntryInvoiceController {
       })
     } catch (error) {
       console.log(error)
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Error de servidor.",
+        data: error,
+        code: StatusCodes.INTERNAL_SERVER_ERROR,
+      })
+    }
+  }
+
+  async listReturnProducts(req: Request, res: Response) {
+    try {
+      let startDate: Date | null = null
+      let endDate: Date | null = null
+
+      if (req.query.startDate && req.query.endDate) {
+        startDate = moment(String(req.query.startDate)).startOf("day").toDate()
+        endDate = moment(String(req.query.endDate)).endOf("day").toDate()
+      }
+
+      const query = EntryInvoiceProduct.createQueryBuilder(
+        "entryInvoiceProduct"
+      )
+        .leftJoinAndSelect("entryInvoiceProduct.returnProduct", "returnProduct")
+        .leftJoinAndSelect("entryInvoiceProduct.product", "product")
+        .leftJoinAndSelect("product.productType", "productType")
+        .leftJoinAndSelect("product.provider", "provider")
+        .leftJoinAndSelect("provider.people", "people")
+        .where("entryInvoiceProduct.returnProduct IS NOT NULL")
+
+      if (startDate && endDate) {
+        query.where(
+          "returnProduct.returnDate BETWEEN :startDate AND :endDate",
+          {
+            startDate,
+            endDate,
+          }
+        )
+      }
+
+      const returnProducts = await query.getMany()
+
+      const products = returnProducts.map((returnProduct) => ({
+        product: returnProduct.product,
+        quantity: returnProduct.quantity,
+        reason: returnProduct.returnProduct.description,
+      }))
+
+      return res.status(StatusCodes.OK).send({
+        code: StatusCodes.OK,
+        products,
+        message: "Lista de productos devueltos.",
+      })
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Error de servidor.",
+        data: error,
+        code: StatusCodes.INTERNAL_SERVER_ERROR,
+      })
+    }
+  }
+
+  async listEntryProducts(req: Request, res: Response) {
+    try {
+      let startDate: Date | null = null
+      let endDate: Date | null = null
+
+      if (req.query.startDate && req.query.endDate) {
+        startDate = moment(String(req.query.startDate)).startOf("day").toDate()
+        endDate = moment(String(req.query.endDate)).endOf("day").toDate()
+      }
+
+      const query = EntryInvoiceProduct.createQueryBuilder(
+        "entryInvoiceProduct"
+      )
+        .leftJoinAndSelect("entryInvoiceProduct.product", "product")
+        .leftJoinAndSelect("entryInvoiceProduct.entryInvoice", "entryInvoice")
+        .leftJoinAndSelect("product.productType", "productType")
+        .leftJoinAndSelect("product.provider", "provider")
+        .leftJoinAndSelect("provider.people", "people")
+
+      if (startDate && endDate) {
+        query.where("entryInvoice.createdAt BETWEEN :startDate AND :endDate", {
+          startDate,
+          endDate,
+        })
+      }
+
+      const entryProducts = await query.getMany()
+
+      const products = entryProducts.map((entryProduct) => ({
+        product: entryProduct.product,
+        quantity: entryProduct.quantity,
+      }))
+
+      const groupedProducts = products.reduce((acc, cur) => {
+        const product = acc.find(
+          (product) => product.product.id === cur.product.id
+        )
+        if (product) {
+          product.quantity += cur.quantity
+        } else {
+          acc.push(cur)
+        }
+        return acc
+      }, [])
+      return res.status(StatusCodes.OK).send({
+        code: StatusCodes.OK,
+        groupedProducts,
+        message: "Lista de productos ingresados.",
+      })
+    } catch (error) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Error de servidor.",
         data: error,
