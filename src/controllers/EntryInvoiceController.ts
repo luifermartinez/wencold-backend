@@ -224,6 +224,7 @@ export class EntryInvoiceController {
         )
         .leftJoinAndSelect("entryInvoiceProduct.product", "product")
         .leftJoinAndSelect("entryInvoiceProduct.returnProduct", "returnProduct")
+        .withDeleted()
         .leftJoinAndSelect("product.provider", "provider")
         .leftJoinAndSelect("provider.people", "people")
         .leftJoinAndSelect("product.productType", "productType")
@@ -422,6 +423,7 @@ export class EntryInvoiceController {
         .leftJoinAndSelect("entryInvoiceProduct.product", "product")
         .leftJoinAndSelect("entryInvoiceProduct.entryInvoice", "entryInvoice")
         .leftJoinAndSelect("product.productType", "productType")
+        .withDeleted()
         .leftJoinAndSelect("product.provider", "provider")
         .leftJoinAndSelect("provider.people", "people")
 
